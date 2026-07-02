@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hybrid Fit — Web Admin Panel
 
-## Getting Started
+A web-based admin dashboard for the Hybrid Fit app: member directory, premium
+users, and the same owner-chat inbox available in the mobile app's admin
+panel — all reading/writing the same Firebase project as the Flutter app.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js 16 (App Router) + TypeScript + Tailwind CSS v4
+- Firebase Auth + Firestore (client SDK) — same project as the mobile app
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Firebase Web app config** — this needs a *Web* app registered in the
+   same Firebase project as the mobile app (separate from the Android
+   `google-services.json`). In Firebase Console → Project Settings → Your
+   apps → Add app → Web (`</>`), register it, then copy the `firebaseConfig`
+   values.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Copy the env template and fill it in:
 
-## Learn More
+   ```bash
+   cp .env.local.example .env.local
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+   ```
+   NEXT_PUBLIC_FIREBASE_API_KEY=
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+   NEXT_PUBLIC_FIREBASE_APP_ID=
+   NEXT_PUBLIC_ADMIN_EMAIL=pakadil101@gmail.com
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Install and run:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-## Deploy on Vercel
+   Open [http://localhost:3000](http://localhost:3000) — you'll land on
+   `/login`. Sign in with the same admin email/password used in the mobile
+   app (`pakadil101@gmail.com`). Any other account is rejected client-side
+   and by `isAdmin()` in `firestore.rules`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploying on Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push this repo to GitHub (already wired to
+   `https://github.com/ahmadabdullah414/Hybrid-Fit-Web-Admin-Panel`).
+2. In Vercel: **New Project** → import the repo.
+3. Add the same six `NEXT_PUBLIC_FIREBASE_*` variables (plus
+   `NEXT_PUBLIC_ADMIN_EMAIL`) under **Settings → Environment Variables**.
+4. Deploy. No other config needed — this is a static/client-rendered app,
+   Vercel's Next.js defaults work out of the box.
+
+## Firestore rules
+
+This panel relies on the **same `firestore.rules`** as the mobile app —
+specifically the `isAdmin()` check (matches on the signed-in user's email)
+and the `owner_chat/{uid}` + `owner_chat/{uid}/messages/{messageId}` rules.
+If those aren't published on the live Firebase project, the panel will
+authenticate fine but every Firestore read/write will fail with
+`permission-denied`.
+
+## What's here
+
+- **Dashboard** (`/dashboard`) — total users, premium users, active
+  conversations, unread messages, and a preview of the newest members.
+- **Users** (`/dashboard/users`) — every member: photo, name, email, age,
+  height (cm + ft/in), weight (kg + lbs), BMI, BMR, and a delete action.
+  Search by name or email.
+- **Premium Users** (`/dashboard/premium`) — same table, filtered to
+  `isPremium`.
+- **Inbox** (`/dashboard/inbox`) — every member's conversation, pin up to 3
+  to the top, unread highlighting, important-message star, search by name
+  or email. Click through to a full chat thread with the same
+  send/edit/delete/mark-important/read-receipt behavior as the app.
+
+Note: deleting a user here removes their Firestore data (profile + chat
+thread) the same way the mobile admin panel does, but — like the mobile
+app — it **cannot** remove their Firebase Auth login itself. That requires
+the Admin SDK / a Cloud Function, which this project doesn't have.

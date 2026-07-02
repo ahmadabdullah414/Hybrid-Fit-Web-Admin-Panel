@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Palette ported 1:1 from the Flutter app's AppColors (lib/core/theme/app_colors.dart)
+   so the web admin panel feels like the same product, not a separate tool. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: #0a0a0a;
+  --color-surface: #16161a;
+  --color-surface-elevated: #1f1f25;
+  --color-border: #2a2a31;
+
+  --color-primary: #ed3237;
+  --color-primary-dark: #b21f26;
+  --color-primary-muted: rgba(237, 50, 55, 0.2);
+
+  --color-text-primary: #f6f6f8;
+  --color-text-secondary: #afafb8;
+  --color-text-muted: #75757d;
+
+  --color-success: #35c77e;
+  --color-warning: #f2a93c;
+  --color-error: #ff5a5f;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border);
 }
