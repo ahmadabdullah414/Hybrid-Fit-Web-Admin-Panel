@@ -42,8 +42,19 @@ panel — all reading/writing the same Firebase project as the Flutter app.
 
    Open [http://localhost:3000](http://localhost:3000) — you'll land on
    `/login`. Sign in with the same admin email/password used in the mobile
-   app (`pakadil101@gmail.com`). Any other account is rejected client-side
-   and by `isAdmin()` in `firestore.rules`.
+   app (`pakadil101@gmail.com`), or with Google. Any other account is
+   rejected client-side and by `isAdmin()` in `firestore.rules`.
+
+## Google Sign-In — two things to check in Firebase Console
+
+1. **Authentication → Sign-in method → Google** must be toggled on (same
+   requirement as the mobile app). If it's already enabled for the mobile
+   app, it's enabled here too — it's a per-project setting, not per-app.
+2. **Authentication → Settings → Authorized domains** must include the
+   domain this panel is served from. `localhost` is authorized by default;
+   your Vercel domain (e.g. `hybrid-fit-web-admin-panel.vercel.app`, or a
+   custom domain) is **not**, and must be added manually or Google Sign-In
+   will fail with `auth/unauthorized-domain` once deployed.
 
 ## Deploying on Vercel
 
@@ -54,6 +65,9 @@ panel — all reading/writing the same Firebase project as the Flutter app.
    `NEXT_PUBLIC_ADMIN_EMAIL`) under **Settings → Environment Variables**.
 4. Deploy. No other config needed — this is a static/client-rendered app,
    Vercel's Next.js defaults work out of the box.
+5. Add the resulting `*.vercel.app` domain (and any custom domain) to
+   Firebase's authorized domains list — see above — or Google Sign-In will
+   fail on the live site even though it works locally.
 
 ## Firestore rules
 

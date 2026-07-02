@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider, type UserCredential, type User } from "firebase/auth";
 import { auth, ADMIN_EMAIL } from "@/lib/firebase";
 
 export type AdminAuthState =
@@ -31,4 +31,15 @@ export function useAdminAuth(): AdminAuthState {
 
 export async function signOutAdmin(): Promise<void> {
   await signOut(auth);
+}
+
+/** Returns null if the user closed/cancelled the Google popup. */
+export async function signInWithGoogle(): Promise<UserCredential | null> {
+  try {
+    return await signInWithPopup(auth, new GoogleAuthProvider());
+  } catch (err) {
+    const code = (err as { code?: string }).code;
+    if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return null;
+    throw err;
+  }
 }
