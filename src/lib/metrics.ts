@@ -21,13 +21,26 @@ export function calculateBmr(weightKg: number, heightCm: number, age: number, is
   return isMale ? base + 5 : base - 161;
 }
 
-export function cmToFeetInches(cm: number): string {
+export function cmToFeetInchesParts(cm: number): { feet: number; inches: number } {
   const totalInches = cm / 2.54;
   const feet = Math.floor(totalInches / 12);
   const inches = Math.round(totalInches % 12);
+  return { feet, inches };
+}
+
+export function cmToFeetInches(cm: number): string {
+  const { feet, inches } = cmToFeetInchesParts(cm);
   return `${feet}'${inches}"`;
+}
+
+export function feetInchesToCm(feet: number, inches: number): number {
+  return (feet * 12 + inches) * 2.54;
 }
 
 export function kgToLbs(kg: number): number {
   return kg * 2.20462;
+}
+
+export function lbsToKg(lbs: number): number {
+  return lbs / 2.20462;
 }

@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAdminData } from "@/hooks/useAdminData";
 import { setPinned } from "@/lib/chat";
 import { MAX_PINNED } from "@/lib/inbox";
 import SearchBar from "@/components/SearchBar";
 import Avatar from "@/components/Avatar";
 import type { AdminInboxEntry } from "@/lib/types";
+
+type FilterKey = "all" | "unread" | "today";
 
 function formatTime(date: Date | null): string {
   if (!date) return "";
@@ -18,17 +20,39 @@ function formatTime(date: Date | null): string {
     : date.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
+function isToday(date: Date | null): boolean {
+  return !!date && date.toDateString() === new Date().toDateString();
+}
+
 export default function InboxPage() {
+  return (
+    <Suspense fallback={null}>
+      <InboxPageContent />
+    </Suspense>
+  );
+}
+
+function InboxPageContent() {
   const { inboxEntries, loading } = useAdminData();
+  const searchParams = useSearchParams();
+  const initialFilter = (searchParams.get("filter") as FilterKey) === "unread" ? "unread" : "all";
+  const [filter, setFilter] = useState<FilterKey>(initialFilter);
   const [query, setQuery] = useState("");
   const [toast, setToast] = useState<string | null>(null);
   const router = useRouter();
 
+  const unreadCount = useMemo(() => inboxEntries.filter((e) => e.unreadForAdmin > 0).length, [inboxEntries]);
+  const todayCount = useMemo(() => inboxEntries.filter((e) => isToday(e.lastMessageAt)).length, [inboxEntries]);
+
   const filtered = useMemo(() => {
+    let list = inboxEntries;
+    if (filter === "unread") list = list.filter((e) => e.unreadForAdmin > 0);
+    else if (filter === "today") list = list.filter((e) => isToday(e.lastMessageAt));
+
     const q = query.trim().toLowerCase();
-    if (!q) return inboxEntries;
-    return inboxEntries.filter((e) => e.name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q));
-  }, [inboxEntries, query]);
+    if (q) list = list.filter((e) => e.name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q));
+    return list;
+  }, [inboxEntries, query, filter]);
 
   const pinnedCount = useMemo(() => inboxEntries.filter((e) => e.pinned).length, [inboxEntries]);
 
@@ -42,6 +66,12 @@ export default function InboxPage() {
     await setPinned(entry.uid, !entry.pinned);
   }
 
+  const filters: { key: FilterKey; label: string; count: number }[] = [
+    { key: "all", label: "All", count: inboxEntries.length },
+    { key: "unread", label: "Unread", count: unreadCount },
+    { key: "today", label: "Today", count: todayCount },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -51,6 +81,25 @@ export default function InboxPage() {
 
       <div className="max-w-md">
         <SearchBar value={query} onChange={setQuery} />
+      </div>
+
+      <div className="flex gap-2">
+        {filters.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-1.5 text-sm font-semibold transition ${
+              filter === f.key
+                ? "border-primary/50 bg-primary-muted text-primary"
+                : "border-border bg-surface text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            {f.label}
+            <span className={`rounded-full px-1.5 text-xs ${filter === f.key ? "bg-primary/20" : "bg-surface-elevated"}`}>
+              {f.count}
+            </span>
+          </button>
+        ))}
       </div>
 
       {toast && (
@@ -63,7 +112,7 @@ export default function InboxPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border py-16 text-center text-text-muted">
-          {inboxEntries.length === 0 ? "Registered members will show up here." : "No matches for that search."}
+          {inboxEntries.length === 0 ? "Registered members will show up here." : "No matches here."}
         </div>
       ) : (
         <div className="flex flex-col gap-2.5">

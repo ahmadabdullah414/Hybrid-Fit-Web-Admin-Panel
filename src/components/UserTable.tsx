@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import { calculateBmi, calculateBmr, bmiCategory, cmToFeetInches, kgToLbs } from "@/lib/metrics";
 import { deleteUserData } from "@/lib/users";
 import type { UserProfile } from "@/lib/types";
 
 export default function UserTable({ users }: { users: UserProfile[] }) {
+  const router = useRouter();
   const [deletingUid, setDeletingUid] = useState<string | null>(null);
   const [confirmUid, setConfirmUid] = useState<string | null>(null);
 
@@ -70,8 +72,8 @@ export default function UserTable({ users }: { users: UserProfile[] }) {
                 <td className="px-5 py-3.5 text-text-secondary">
                   {u.heightCm != null ? (
                     <>
-                      {u.heightCm.toFixed(0)} cm
-                      <span className="ml-1 text-xs text-text-muted">({cmToFeetInches(u.heightCm)})</span>
+                      <span className="font-semibold text-text-primary">{cmToFeetInches(u.heightCm)}</span>
+                      <span className="ml-1 text-xs text-text-muted">({u.heightCm.toFixed(0)} cm)</span>
                     </>
                   ) : (
                     "—"
@@ -80,7 +82,7 @@ export default function UserTable({ users }: { users: UserProfile[] }) {
                 <td className="px-5 py-3.5 text-text-secondary">
                   {u.weightKg != null ? (
                     <>
-                      {u.weightKg.toFixed(1)} kg
+                      <span className="font-semibold text-text-primary">{u.weightKg.toFixed(1)} kg</span>
                       <span className="ml-1 text-xs text-text-muted">({kgToLbs(u.weightKg).toFixed(1)} lbs)</span>
                     </>
                   ) : (
@@ -117,13 +119,22 @@ export default function UserTable({ users }: { users: UserProfile[] }) {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => setConfirmUid(u.uid)}
-                      className="rounded-lg p-2 text-text-muted transition hover:bg-error/10 hover:text-error"
-                      title="Delete account"
-                    >
-                      <TrashIcon />
-                    </button>
+                    <div className="flex items-center justify-end gap-1 whitespace-nowrap">
+                      <button
+                        onClick={() => router.push(`/dashboard/inbox/${u.uid}`)}
+                        className="rounded-lg p-2 text-text-muted transition hover:bg-primary-muted hover:text-primary"
+                        title="Open chat"
+                      >
+                        <ChatIcon />
+                      </button>
+                      <button
+                        onClick={() => setConfirmUid(u.uid)}
+                        className="rounded-lg p-2 text-text-muted transition hover:bg-error/10 hover:text-error"
+                        title="Delete account"
+                      >
+                        <TrashIcon />
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>
@@ -142,6 +153,14 @@ function TrashIcon() {
       <path d="M10 11v6M14 11v6" />
       <path d="M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13" />
       <path d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" />
+    </svg>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+      <path d="M21 12a8 8 0 10-3.5 6.6L21 20l-1.2-3.6A7.9 7.9 0 0021 12z" />
     </svg>
   );
 }

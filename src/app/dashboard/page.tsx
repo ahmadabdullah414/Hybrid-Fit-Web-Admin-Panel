@@ -26,10 +26,20 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Users" value={loading ? "—" : users.length} icon={<UsersGlyph />} accent />
-        <StatCard label="Premium Users" value={loading ? "—" : premiumCount} icon={<CrownGlyph />} />
-        <StatCard label="Active Conversations" value={loading ? "—" : activeConversations} icon={<ChatGlyph />} />
-        <StatCard label="Unread Messages" value={loading ? "—" : unreadTotal} icon={<BellGlyph />} />
+        <StatCard label="Total Users" value={loading ? "—" : users.length} icon={<UsersGlyph />} accent href="/dashboard/users" />
+        <StatCard label="Premium Users" value={loading ? "—" : premiumCount} icon={<CrownGlyph />} href="/dashboard/premium" />
+        <StatCard
+          label="Active Conversations"
+          value={loading ? "—" : activeConversations}
+          icon={<ChatGlyph />}
+          href="/dashboard/inbox"
+        />
+        <StatCard
+          label="Unread Messages"
+          value={loading ? "—" : unreadTotal}
+          icon={<BellGlyph />}
+          href="/dashboard/inbox?filter=unread"
+        />
       </div>
 
       <div>

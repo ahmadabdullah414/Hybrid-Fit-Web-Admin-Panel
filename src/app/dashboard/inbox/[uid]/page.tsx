@@ -109,7 +109,12 @@ export default function ChatThreadPage() {
             <p className="max-w-xs text-sm text-text-muted">Say hello — messages appear here instantly.</p>
           </div>
         ) : (
-          [...timeline].reverse().map((item, i) =>
+          // `timeline` is newest-first (matches `messages`), and the
+          // container is `flex-col-reverse`, which visually flips DOM order
+          // — so the first (newest) item here ends up at the bottom, exactly
+          // like a normal chat. Reversing this array would put the newest
+          // message at the top instead.
+          timeline.map((item, i) =>
             item instanceof Date ? (
               <div key={`date-${i}`} className="my-2 flex items-center gap-3">
                 <div className="h-px flex-1 bg-border" />
