@@ -3,17 +3,22 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOutAdmin } from "@/hooks/useAdminAuth";
+import { useAdminData } from "@/hooks/useAdminData";
+import NotificationBell from "./NotificationBell";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: DashboardIcon },
   { href: "/dashboard/users", label: "Users", icon: UsersIcon },
   { href: "/dashboard/premium", label: "Premium Users", icon: CrownIcon },
   { href: "/dashboard/inbox", label: "Inbox", icon: InboxIcon },
+  { href: "/dashboard/banners", label: "Home Banners", icon: BannersIcon },
+  { href: "/dashboard/notify-users", label: "Notify Users", icon: NotifyIcon },
 ];
 
 export default function Sidebar({ email, unread }: { email: string | null; unread: number }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { notifications } = useAdminData();
 
   async function handleLogout() {
     await signOutAdmin();
@@ -22,14 +27,17 @@ export default function Sidebar({ email, unread }: { email: string | null; unrea
 
   return (
     <aside className="fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-border bg-surface/80 backdrop-blur-xl">
-      <div className="flex items-center gap-3 px-6 py-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/40 bg-primary-muted">
-          <span className="text-lg font-black italic text-primary">HF</span>
+      <div className="flex items-center justify-between gap-3 px-6 py-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/40 bg-primary-muted">
+            <span className="text-lg font-black italic text-primary">HF</span>
+          </div>
+          <div>
+            <p className="text-sm font-bold leading-tight text-text-primary">Hybrid Fit</p>
+            <p className="text-xs leading-tight text-text-muted">Admin Panel</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-bold leading-tight text-text-primary">Hybrid Fit</p>
-          <p className="text-xs leading-tight text-text-muted">Admin Panel</p>
-        </div>
+        <NotificationBell notifications={notifications} />
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
@@ -106,6 +114,25 @@ function InboxIcon({ active }: { active: boolean }) {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.4 : 2}>
       <path d="M4 4h16l-1.5 13.5a1 1 0 01-1 .9H6.5a1 1 0 01-1-.9L4 4z" />
       <path d="M4 12h4.5a2.5 2.5 0 004.9 0H20" />
+    </svg>
+  );
+}
+
+function BannersIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.4 : 2}>
+      <rect x="3" y="6" width="18" height="12" rx="2" />
+      <circle cx="8.5" cy="11" r="1.5" />
+      <path d="M21 16l-4.5-4.5L9 19" />
+    </svg>
+  );
+}
+
+function NotifyIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.4 : 2}>
+      <path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" />
+      <path d="M10 20a2 2 0 004 0" />
     </svg>
   );
 }

@@ -50,3 +50,22 @@ export interface AdminInboxEntry {
   pinned: boolean;
   hasConversation: boolean;
 }
+
+/** Home screen carousel banner — mirrors lib/features/home/models/home_banner.dart. */
+export interface HomeBanner {
+  id: string;
+  title: string;
+  imageUrl: string;
+  linkUrl: string | null;
+  createdAt: Date;
+}
+
+/** Admin broadcast update — mirrors lib/features/home/models/admin_notification.dart. */
+export interface AdminNotification {
+  id: string;
+  title: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  linkUrl: string | null;
+  createdAt: Date;
+}
