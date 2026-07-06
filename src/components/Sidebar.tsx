@@ -30,7 +30,8 @@ export default function Sidebar({ email, unread }: { email: string | null; unrea
       <div className="flex items-center justify-between gap-3 px-6 py-6">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/40 bg-primary-muted">
-            <span className="text-lg font-black italic text-primary">HF</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Hybrid Fit" className="h-7 w-7 object-contain" />
           </div>
           <div>
             <p className="text-sm font-bold leading-tight text-text-primary">Hybrid Fit</p>
