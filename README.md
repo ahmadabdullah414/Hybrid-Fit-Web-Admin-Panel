@@ -30,7 +30,7 @@ panel — all reading/writing the same Firebase project as the Flutter app.
    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
    NEXT_PUBLIC_FIREBASE_APP_ID=
-   NEXT_PUBLIC_ADMIN_EMAIL=pakadil101@gmail.com
+   NEXT_PUBLIC_ADMIN_EMAIL=pakadil101@gmail.com,hybridstrengthnfitness@gmail.com
    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=h9abl4nh
    NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=hybridfit
    ```
@@ -48,9 +48,10 @@ panel — all reading/writing the same Firebase project as the Flutter app.
    ```
 
    Open [http://localhost:3000](http://localhost:3000) — you'll land on
-   `/login`. Sign in with the same admin email/password used in the mobile
-   app (`pakadil101@gmail.com`), or with Google. Any other account is
-   rejected client-side and by `isAdmin()` in `firestore.rules`.
+   `/login`. Sign in with either admin account's email/password used in the
+   mobile app (`pakadil101@gmail.com` or `hybridstrengthnfitness@gmail.com`),
+   or with Google. Any other account is rejected client-side and by
+   `isAdmin()` in `firestore.rules`.
 
 ## Google Sign-In — two things to check in Firebase Console
 

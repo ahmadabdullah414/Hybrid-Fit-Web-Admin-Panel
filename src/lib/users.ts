@@ -8,7 +8,7 @@ import {
   type DocumentData,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
-import { db, ADMIN_EMAIL } from "./firebase";
+import { db, isAdminEmail } from "./firebase";
 import type { UserProfile } from "./types";
 
 const USERS_COLLECTION = "users";
@@ -32,10 +32,10 @@ function fromDoc(d: QueryDocumentSnapshot<DocumentData>): UserProfile {
   };
 }
 
-/** Live subscription to every member profile except the admin's own account. */
+/** Live subscription to every member profile except the admin accounts. */
 export function subscribeUsers(callback: (users: UserProfile[]) => void): () => void {
   return onSnapshot(collection(db, USERS_COLLECTION), (snap) => {
-    const users = snap.docs.map(fromDoc).filter((u) => u.email.toLowerCase() !== ADMIN_EMAIL);
+    const users = snap.docs.map(fromDoc).filter((u) => !isAdminEmail(u.email));
     callback(users);
   });
 }

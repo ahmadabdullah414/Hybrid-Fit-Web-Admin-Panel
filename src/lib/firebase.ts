@@ -11,7 +11,17 @@ export const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? "pakadil101@gmail.com").toLowerCase();
+// Comma-separated so more than one gym-owner/admin account can be granted
+// access — matches AppConstants.adminEmails / isAdmin() in firestore.rules
+// on the Flutter side.
+export const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? "pakadil101@gmail.com,hybridstrengthnfitness@gmail.com")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
+export function isAdminEmail(email: string | null | undefined): boolean {
+  return !!email && ADMIN_EMAILS.includes(email.toLowerCase());
+}
 
 // Every page here is "use client" and only ever touches `auth`/`db` after
 // mount (inside useEffect/handlers), never during render. But Next.js still

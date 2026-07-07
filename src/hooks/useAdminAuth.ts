@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider, type UserCredential, type User } from "firebase/auth";
-import { auth, ADMIN_EMAIL } from "@/lib/firebase";
+import { auth, isAdminEmail } from "@/lib/firebase";
 
 export type AdminAuthState =
   | { status: "loading" }
@@ -10,7 +10,7 @@ export type AdminAuthState =
   | { status: "not-admin"; user: User }
   | { status: "admin"; user: User };
 
-/** Tracks Firebase auth state and gates it to the single admin email. */
+/** Tracks Firebase auth state and gates it to the admin email allowlist. */
 export function useAdminAuth(): AdminAuthState {
   const [state, setState] = useState<AdminAuthState>({ status: "loading" });
 
@@ -20,8 +20,7 @@ export function useAdminAuth(): AdminAuthState {
         setState({ status: "signed-out" });
         return;
       }
-      const isAdmin = (user.email ?? "").toLowerCase() === ADMIN_EMAIL;
-      setState(isAdmin ? { status: "admin", user } : { status: "not-admin", user });
+      setState(isAdminEmail(user.email) ? { status: "admin", user } : { status: "not-admin", user });
     });
     return unsubscribe;
   }, []);

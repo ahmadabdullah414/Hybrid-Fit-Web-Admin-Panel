@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, isAdminEmail } from "@/lib/firebase";
 import { useAdminAuth, signOutAdmin } from "@/hooks/useAdminAuth";
 import ParticleBackground from "@/components/ParticleBackground";
 
 function isAuthorized(email: string | null): boolean {
-  return (email ?? "").toLowerCase() === process.env.NEXT_PUBLIC_ADMIN_EMAIL?.toLowerCase();
+  return isAdminEmail(email);
 }
 
 export default function LoginPage() {
